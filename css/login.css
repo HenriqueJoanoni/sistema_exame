@@ -1,0 +1,31 @@
+/* 
+    Created on : 22/06/2018, 23:33:49
+    Author     : henrique
+*/
+input{
+    width: 300px;
+    padding: 15px;
+    font-size: 14px;
+    border: 1px solid #CCC;
+}
+input[type=submit]{
+    width: 150px;
+    padding: 15px;
+    font-size: 14px;
+    border: 1px solid #CCC;
+}
+.redSenha{
+    text-decoration: none;
+}
+.login{
+    background-color: #8B8970;
+}
+/*
+input[type=submit]:hover{
+    color: black;
+    box-shadow: #000 5px 5px 5px;
+    transition: ease-in;
+    transition-duration: 0.25s;
+    transition-timing-function: linear;
+}
+*/

@@ -1,0 +1,193 @@
+<?php
+include 'apoio/assets.php';
+include 'apoio/mensagens.php';
+
+/*$valorInicial = array('id_funcao','id_cidade','id_setor','nome','dt_nascimento','telefone','rg','cpf','email','dt_admissao','ativo','cidade'
+                       ,'bairro','cep','uf','rua','carga_horaria','salario');*/
+
+$valorInicial = array('nome','data_de_nascimento','telefone','rg','cpf','email','dt_admissao','cidade','bairro','cep','uf','rua');
+$obrigatorio = $valorInicial;
+
+$funcId = isset($_POST['id_funcao']) ? $_POST['id_funcao'] : '';
+$setorId = isset($_POST['id_setor']) ? $_POST['id_setor'] : '';
+$cidadeId = isset($_POST['id_cidade']) ? $_POST['id_cidade'] : '';
+$ativo = isset($_POST['ativo']) ? $_POST['ativo'] : null;
+
+$acao = isset($_POST['btCancelar']) ? ACAO_CONSULTAR : (isset($_REQUEST['acao']) ? $_REQUEST['acao'] : ACAO_CONSULTAR);
+$paramInsert = ValorInicio($valorInicial);
+
+try {
+    if (isset($_POST['btCarregaExpediente'])) {
+        $paramInsert = $_POST;
+    }
+    if (isset($_POST['btCarregaCid'])) {
+        $paramInsert = $_POST;
+    }
+
+    if (Gravar()) {
+        try {
+            $paramInsert = $_POST;
+            
+            $cpf = limpaString($_POST['cpf']);
+            $tel = limpaString($_POST['telefone']);
+            $admissao = date("Y-m-d", strtotime(str_replace('/', '-', $_POST['dt_admissao'])));
+            $nascimento = date("Y-m-d", strtotime(str_replace('/', '-', $_POST['data_de_nascimento'])));
+
+            $transac = 0;
+            validaForm();
+            $result = pg_query(ConnectPG(), 'begin');
+            if (!$result) {throw new Exception("Não foi possível iniciar a Transação!");}
+            $transac = 1;
+
+            $sql = sprintf("INSERT INTO endereco (nome_cidade,logradouro,cep,rua,estado) VALUES (%s,%s,%s,%s,%s)RETURNING id_cidade", 
+                            QuotedStr($_POST['cidade']), QuotedStr($_POST['bairro']), QuotedStr($_POST['cep']), 
+                            QuotedStr($_POST['rua']), QuotedStr($_POST['uf']));
+            $result = pg_query(ConnectPG(), $sql);
+            if (!$result) {throw new Exception("Não foi possível cadastrar o endereço");}
+            $id_cidade = pg_fetch_array($result,NULL,PGSQL_NUM);
+            
+            $sql = sprintf("INSERT INTO funcionario (id_funcao, id_cidade, id_setor, nome, dt_nascimento, telefone, rg, cpf,email, dt_admissao,ativo) "
+                    . "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", QuotedStr($_POST['id_funcao']), 
+                    QuotedStr($id_cidade[0]), QuotedStr($_POST['id_setor']), QuotedStr($_POST['nome']), 
+                    QuotedStr($nascimento), QuotedStr($tel), QuotedStr($_POST['rg']), QuotedStr($cpf), QuotedStr($_POST['email']), 
+                    QuotedStr($admissao), QuotedStr(@$_POST['ativo']));
+            $result = pg_query(ConnectPG(), $sql);
+            
+            $result = pg_query(ConnectPG(),'commit');
+            if(!$result){throw new Exception("Não foi possível finalizar a transação");}
+            
+            if (!$result) {
+
+                foreach ($_POST as $campo => $valor) {
+                    $paramInsert[$campo] = $valor;
+                }
+
+                throw new Exception("Não foi possível cadastrar o usuário!!");
+            }
+            echo "<SCRIPT type='text/javascript'> //not showing me this
+                    alert('Funcionário cadastrado com Sucesso!');
+                    window.location.replace(\"listaFuncionario.php\");
+                    </SCRIPT>";
+            /*Alert("Funcionário cadastrado com Sucesso!");
+            header("Location: listaFuncionario.php");*/
+        } catch (Exception $ex) {
+            if ($transac) {
+                pg_query(ConnectPG(), 'rollback');
+            }
+            $msg = $ex->getMessage();
+            Alert($msg);
+        }
+    }
+} catch (Exception $e) {
+    $mensagem = $e->getMessage();
+    Alert($mensagem);
+}
+?>
+<html>
+    <?php include 'apoio/header.php'; ?>
+    <div class="body">
+        <div class="formcadastro">
+            <h2 style="text-align: center">Cadastro de Funcionários</h2>
+            <fieldset>
+                <form action="cadastraFuncionario.php" method="POST">
+                    <input type="hidden" name="acao" value="<?php echo $acao; ?>">
+                    <input type="hidden" name="id_funcionario" value="<?php echo $funcId; ?>">
+                    <!--DADOS PESSOAIS --> 
+                    <fieldset>
+                        <legend>Dados Pessoais</legend>
+                        <table cellspacing="10">
+                            <tr>
+                                <td><label for="nome">Nome: </label></td>
+                                <td align="left">
+                                    <input type="text" name="nome" size="26" placeholder="Nome do Funcionario" value="<?php echo $paramInsert['nome']; ?>">
+                                </td>
+                                <td><label>Nascimento: </label></td>
+                                <td align="left">
+                                    <input type="text" name="data_de_nascimento" onkeypress="mascaraData(this)" size="16" placeholder="dd/mm/aa" value="<?php echo $paramInsert['data_de_nascimento']; ?>"> 
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label>Email: </label></td>
+                                <td align="left">
+                                    <input type="text" name="email"  size="26" placeholder="email do Funcionario" value="<?php echo $paramInsert['email']; ?>"> 
+                                </td>
+                                <td><label for="rg">RG: </label></td>
+                                <td align="left">
+                                    <input type="text" name="rg" size="16" placeholder="RG" maxlength="13" value="<?php echo $paramInsert['rg']; ?>"> 
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label>CPF:</label></td>
+                                <td align="left">
+                                    <input type="text" maxlength="14" onkeydown="mascara(this,cpfMask)" size="16" name="cpf" placeholder="000.000.000-00" value="<?php echo $paramInsert['cpf']; ?>">
+                                </td>
+                                <td><label>Telefone: </label></td>
+                                <td align="left">
+                                    <input type="text" name="telefone" size="16" placeholder="(xx)xxxxx-xxxx" onkeyup="telmask(this)" value="<?php echo $paramInsert['telefone']; ?>"> 
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label>Data de Admissão: </label></td>
+                                <td align="left">
+                                    <input type="text" name="dt_admissao" onkeypress="mascaraData(this)" size="16" placeholder="dd/mm/aa" value="<?php echo $paramInsert['dt_admissao']; ?>"> 
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label>Cep: </label></td>
+                                <td><input name="cep" type="text" id="cep" value="" placeholder="00000-000" size="10" maxlength="9"onblur="pesquisacep(this.value);" /></td>
+                                <td><label>Rua:</label></td>
+                                <td><input name="rua" type="text" id="rua" placeholder="Nome da Rua" size="16" /></td>
+                            </tr>
+                            <tr>
+                                <td><label>Bairro:</label></td>
+                                <td><input name="bairro" type="text" id="bairro" placeholder="Logradouro" size="16" /></td>
+                                <td><label>Cidade:</label></td>
+                                <td><input name="cidade" type="text" id="cidade" placeholder="Nome da Cidade" size="16" /></td>
+                            </tr>
+                            <tr>
+                                <td><label>Estado:</label></td>
+                                <td><input name="uf" type="text" id="uf" placeholder="UF" size="2" /></td>
+                            </tr>
+                        </table>
+                    </fieldset>
+                    <br />
+                    <!-- ENDEREÇO -->
+                    <fieldset>
+                        <legend>Dados de Função</legend>
+                        <table cellspacing="10">
+                            <tr>
+                                <td><label for="id_Setor">Setor</label></td>
+                                <td align="left">
+                                    <select size="1" name="id_setor">
+                                        <?php echo GetSetor($setorId) ?>
+                                    </select>
+                                </td>
+                                <!--<td><label>Salário:</label></td>
+                                <td><input type="text" name="salario" placeholder="R$ 00,00"</td>-->
+                            </tr>
+                            <tr>
+                                <td><label for="id_funcao">Função:</label></td>
+                                <td align="left">
+                                    <select size="1" name="id_funcao"> 
+                                        <?php echo GetFuncao($funcId) ?>
+                                    </select>
+                                </td>
+                                <!--<td><label> Carga Horária: </label></td>
+                                <td><input type="text" name="carga_horaria" placeholder="Carga Horária"></td>-->
+                            </tr>
+                            <tr>
+                                <td>Permitir Login<input type="checkbox" name="ativo" value="s"></td>
+                            </tr>
+                        </table>
+                    </fieldset>
+                    <br />
+                    <input type="button" name="btCancelar" value="Cancelar" onclick="javascript: location.href='index.php';">
+                    <input type="submit" name="btEnviar" value="Cadastrar">
+                </form>
+            </fieldset>
+            <br>
+        </div>
+    </div>
+    <?php include 'apoio/footer.php'; ?>
+</html>
+
