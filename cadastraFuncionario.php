@@ -17,10 +17,7 @@ $acao = isset($_POST['btCancelar']) ? ACAO_CONSULTAR : (isset($_REQUEST['acao'])
 $paramInsert = ValorInicio($valorInicial);
 
 try {
-    if (isset($_POST['btCarregaExpediente'])) {
-        $paramInsert = $_POST;
-    }
-    if (isset($_POST['btCarregaCid'])) {
+    if (isset($_POST['btCarregaFuncao'])) {
         $paramInsert = $_POST;
     }
 
@@ -68,8 +65,6 @@ try {
                     alert('Funcionário cadastrado com Sucesso!');
                     window.location.replace(\"listaFuncionario.php\");
                     </SCRIPT>";
-            /*Alert("Funcionário cadastrado com Sucesso!");
-            header("Location: listaFuncionario.php");*/
         } catch (Exception $ex) {
             if ($transac) {
                 pg_query(ConnectPG(), 'rollback');
@@ -134,7 +129,7 @@ try {
                             </tr>
                             <tr>
                                 <td><label>Cep: </label></td>
-                                <td><input name="cep" type="text" id="cep" value="" placeholder="00000-000" size="10" maxlength="9"onblur="pesquisacep(this.value);" /></td>
+                                <td><input name="cep" type="text" id="cep" value="" placeholder="00000-000" size="10" maxlength="9" onblur="pesquisacep(this.value);"/></td>
                                 <td><label>Rua:</label></td>
                                 <td><input name="rua" type="text" id="rua" placeholder="Nome da Rua" size="16" /></td>
                             </tr>
@@ -156,24 +151,21 @@ try {
                         <legend>Dados de Função</legend>
                         <table cellspacing="10">
                             <tr>
-                                <td><label for="id_Setor">Setor</label></td>
+                                <td><label for="id_setor">Setor</label></td>
                                 <td align="left">
                                     <select size="1" name="id_setor">
                                         <?php echo GetSetor($setorId) ?>
                                     </select>
+                                    <input type="submit" name="btCarregaFuncao" value="..."/>
                                 </td>
-                                <!--<td><label>Salário:</label></td>
-                                <td><input type="text" name="salario" placeholder="R$ 00,00"</td>-->
                             </tr>
                             <tr>
                                 <td><label for="id_funcao">Função:</label></td>
                                 <td align="left">
                                     <select size="1" name="id_funcao"> 
-                                        <?php echo GetFuncao($funcId) ?>
+                                    <?php echo GetFuncao($setorId, $funcId) ?>
                                     </select>
                                 </td>
-                                <!--<td><label> Carga Horária: </label></td>
-                                <td><input type="text" name="carga_horaria" placeholder="Carga Horária"></td>-->
                             </tr>
                             <tr>
                                 <td>Permitir Login<input type="checkbox" name="ativo" value="s"></td>

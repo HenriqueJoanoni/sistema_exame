@@ -6,6 +6,7 @@
     <!--<script type="text/javascript" src="js/valida.js"></script>-->
     <script type="text/javascript" src="js/funcoes.js"></script>
     <script type="text/javascript" src="js/cep.js"></script>
+    <script type="text/javascript" src="js/jquery-3.3.1.slim.min.js"></script>
 </head>
 <body> 
 <div class="topo">

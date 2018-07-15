@@ -114,7 +114,7 @@ function check_form()
 
     if (d.paramLogin.value == "")
     {
-        alert("Campo login está em Branco!")
+        alert("Campo login está em Branco!");
         d.login.focus();
         return false;
     }
@@ -126,11 +126,6 @@ function check_form()
         return false;
     }
     
-    if(d.paramLogin.value && d.paramSenha.value == ""){
-        alert("Preencha todos os campos!");
-        d.paramLogin.focus();
-        return false;
-    }
     return true;
 }
 

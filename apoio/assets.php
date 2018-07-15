@@ -97,36 +97,6 @@ function validaEmail($string) {
     return($ret);
 }
 
-/*function GetCidade($cidId = '') {
-    $sql = "SELECT id_cidade,nome_cidade FROM endereco ORDER BY 1";
-    $result = @pg_query(ConnectPG(), $sql);
-
-    $sel = $cidId == '' ? 'selected="selected"' : '';
-
-    $listaCidades = "<option value=\"\" $sel>-------</option>";
-    While ($row = @pg_fetch_array($result, null, PGSQL_ASSOC)) {
-        $cidBanco = $row['id_cidade'];
-        $sel = ($cidId == $cidBanco) ? 'selected="selected"' : '';
-        $listaCidades .= sprintf("<option value=\"%s\" %s>%s</option>", $row['id_cidade'], $sel, $row['nome_cidade']);
-    }
-    return $listaCidades;
-}*/
-
-function GetFuncao($funcId = '') {
-    $sql = "SELECT id_funcao,descricao FROM funcao ORDER BY 1";
-    $result = @pg_query(ConnectPG(), $sql);
-
-    $sel = $funcId == '' ? 'selected="selected"' : '';
-
-    $funcaoLista = "<option value=\"\"$sel>-------</option>";
-    while ($row = @pg_fetch_array($result, null, PGSQL_ASSOC)) {
-        $funcBanco = $row['id_funcao'];
-        $sel = ($funcId == $funcBanco) ? 'selected="selected"' : '';
-        $funcaoLista .= sprintf("<option value=\"%s\"%s>%s</option>", $row['id_funcao'], $sel, $row['descricao']);
-    }
-    return $funcaoLista;
-}
-
 function GetSetor($setorId = '') {
     $sql = "SELECT id_setor,nome_setor FROM setor ORDER BY 1";
     $result = @pg_query(ConnectPG(), $sql);
@@ -140,6 +110,25 @@ function GetSetor($setorId = '') {
         $listaSetor .= sprintf("<option value=\"%s\"%s>%s</option>", $row['id_setor'], $sel, $row['nome_setor']);
     }
     return $listaSetor;
+}
+
+function GetFuncao($setorId, $funcId = '') {
+    
+    if(!isset($setorId) || !$setorId){
+        return "<option value=\"\" selected=\"selected\">--</option>";
+    }
+    
+    $sql = sprintf("SELECT id_funcao,descricao FROM funcao WHERE id_setor = %s ORDER BY 1", $setorId);
+    $result = @pg_query(ConnectPG(), $sql);
+
+    $sel = $funcId == '' ? 'selected="selected"' : '';
+    $funcaoLista = "<option value=\"\"$sel>-------</option>";
+    while ($row = @pg_fetch_array($result, null, PGSQL_ASSOC)) {
+        $funcBanco = $row['id_funcao'];
+        $sel = ($funcId == $funcBanco) ? 'selected="selected"' : '';
+        $funcaoLista .= sprintf("<option value=\"%s\"%s>%s</option>", $row['id_funcao'], $sel, $row['descricao']);
+    }
+    return $funcaoLista;
 }
 
 function GetAcao() {

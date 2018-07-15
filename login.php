@@ -2,6 +2,9 @@
 include_once 'apoio/assets.php';
 include 'apoio/mensagens.php';
 
+$valorInicial = array('email', 'senha', 'ativo');
+$paramInsert = ValorInicio($valorInicial);
+
 // VERIFICA SE FOI ENVIADO AS VARIÁVEIS ATRAVÉS DO POST
 if (isset($_POST['paramLogin']) && $_POST['paramLogin'] != "" && $_POST['paramSenha'] != "") {
 
@@ -17,6 +20,9 @@ if (isset($_POST['paramLogin']) && $_POST['paramLogin'] != "" && $_POST['paramSe
 
     // VERIFICA SE ACHOU ALGUM USUÁRIO CADASTRADO CASO CONTRÁRIO DÁ UM ALERTA PARA O USUÁRIO
     if (!$Res) {
+        foreach($_POST as $campo=>$valor){
+            $paramInsert[$campo] = $valor;
+        }
         Alert("Login ou senha inválidos!");
     } elseif ($result) {
         // CRIA AS SESSÕES DE VALIDAÇÃO DAS PAGINAS
