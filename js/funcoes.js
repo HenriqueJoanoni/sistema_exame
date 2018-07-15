@@ -104,3 +104,51 @@ function telmask(campo) {
     else
         stop = campo.value;
 }
+
+/*
+ * Função para validação dos campos em branco da pagina de login
+ */
+function check_form()
+{
+    d = document.login;
+
+    if (d.paramLogin.value == "")
+    {
+        alert("Campo login está em Branco!")
+        d.login.focus();
+        return false;
+    }
+
+    if (d.paramSenha.value == "")
+    {
+        alert("Campo senha está em Branco!");
+        d.senha.focus();
+        return false;
+    }
+    
+    if(d.paramLogin.value && d.paramSenha.value == ""){
+        alert("Preencha todos os campos!");
+        d.paramLogin.focus();
+        return false;
+    }
+    return true;
+}
+
+
+/*function check_form() {
+    var inputs = document.getElementsByClassName('required');
+    var len = inputs.length;
+    var valid = true;
+    for (var i = 0; i < len; i++) {
+        if (!inputs[i].value) {
+            valid = false;
+        }
+    }
+    if (!valid) {
+        alert('Por favor preencha todos os campos.');
+        return false;
+        
+    } else {
+        return true;
+    }
+}*/

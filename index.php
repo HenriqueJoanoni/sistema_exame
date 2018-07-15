@@ -1,17 +1,8 @@
 <?php
-/*session_start();
-if (isset($_SESSION['paramLogin']) && !empty($_SESSION['paramLogin'])) {
-    echo "bem-vindo " . $_SESSION['paramLogin'] . "!";
-} else {
-    header("Location: login.php");
-}
-*/
+require_once 'apoio/valida.php';
 ?>
 <html>
     <?php include 'apoio/header.php'; ?>
-    <!--<div class="topousuario">
-        <h3>Bem-Vindo <?php echo $_SESSION['user'] ?>!</h3>
-    </div>-->
     <div class="body">
         <div class="content">
             <h2>Escolha uma Opção</h2>
@@ -31,7 +22,7 @@ if (isset($_SESSION['paramLogin']) && !empty($_SESSION['paramLogin'])) {
                 <a href="geraExame.php"><img src="img/examination.png" border="0" width="100%" height="200"/></a><br /><br />
                 <strong><a href="geraExame.php" style="text-decoration: none;">Gerar Exame</a></strong>
             </div>
-            <input type="button" name="btSair" value="sair" onclick="javascript: location.href='login.php';">
+            <input type="button" name="btSair" value="sair" onclick="javascript: location.href='apoio/logoff.php'">
         </div>
     </div>
     <?php include 'apoio/footer.php'; ?>

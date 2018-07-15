@@ -2,51 +2,31 @@
 include_once 'apoio/assets.php';
 include 'apoio/mensagens.php';
 
-$valorInicial = array('email', 'senha', 'ativo');
-$paramEntrar = isset($_POST['paramLogin']) ? $_POST['paramLogin'] : '';
-$paramSenha = isset($_POST['paramSenha']) ? $_POST['paramSenha'] : '';
-$paramInsert = ValorInicio($valorInicial);
+// VERIFICA SE FOI ENVIADO AS VARIÁVEIS ATRAVÉS DO POST
+if (isset($_POST['paramLogin']) && $_POST['paramLogin'] != "" && $_POST['paramSenha'] != "") {
 
-try {
-    if (isset($_POST['btLogin']) && empty($_POST['paramLogin']) && empty($_POST['paramSenha'])) {
+    // RECEBE AS VARIÁVEIS VIA POST E TRATA O SQL INJECTION FINALIZANDO COM A CODIFICAÇÃO MD5
+        $LoginPost = $_POST['paramLogin'];
+        $senhaPost = $_POST['paramSenha'];
 
-        foreach ($_POST as $campo => $valor) {
-            $paramInsert[$campo] = $valor;
-        }
+    // VERIFICA SE EXISTE USUÁRIOS CADASTRADOS COM O LOGIN E SENHA INFORMADO
+    $sql = sprintf("SELECT id_login,email,senha FROM login WHERE email = %s AND senha = %s", 
+            QuotedStr($LoginPost), QuotedStr(md5($senhaPost)));
+    $result = pg_query(ConnectPG(), $sql);
+    $Res = pg_fetch_assoc($result);
 
-        throw new Exception("Todos os campos devem ser preenchidos!");
+    // VERIFICA SE ACHOU ALGUM USUÁRIO CADASTRADO CASO CONTRÁRIO DÁ UM ALERTA PARA O USUÁRIO
+    if (!$Res) {
+        Alert("Login ou senha inválidos!");
+    } elseif ($result) {
+        // CRIA AS SESSÕES DE VALIDAÇÃO DAS PAGINAS
+        session_start();
+        $_SESSION['IDlogin'] = $Res['id_login'];
+        $_SESSION['paramLogin'] = $Res['email'];
+        $_SESSION['paramSenha'] = $Res['senha'];
         
-    } elseif (isset($_POST['btLogin']) && empty($_POST['paramLogin'])) {
-        
-        throw new Exception("Campo Login deve ser preenchido");
-        
-    } elseif (isset($_POST['btLogin']) && empty($_POST['paramSenha'])) {
-        
-        throw new Exception("Campo Senha deve ser preenchido");
-    } else{
-        
-        $sql = sprintf("SELECT email,senha FROM login WHERE email = %s AND senha = %s", 
-                       QuotedStr($paramEntrar), QuotedStr(md5($paramSenha)));
-
-        $result = pg_query(ConnectPG(), $sql);
-
-        if (!pg_fetch_row($result)) {
-
-            foreach ($_POST as $campo => $valor) {
-                $paramInsert[$campo] = $valor;
-            }
-
-            throw new Exception("Login ou senha inválidos!");
-        } elseif ($_POST['ativo'] == 'n') {
-
-            throw new Exception("Perfil Desativado!");
-        } else {
-            header("Location: index.php");
-        }
+        header("Location: index.php");
     }
-} catch (Exception $ex) {
-    $msg = $ex->getMessage();
-    Alert($msg);
 }
 ?>
 <html>
@@ -56,12 +36,12 @@ try {
         <h3>Bem-Vindo</h3>
         <body>
             <div class="formulario">
-                <form action="login.php" method="POST">
+                <form id="login" name="login" action="login.php" method="POST" onsubmit="return check_form()">
                     Email:<br />
-                    <input type="text" name="paramLogin" placeholder="Login" value="<?php echo @$paramInsert['paramLogin']; ?>"><br />
+                    <input type="text" name="paramLogin" id="paramLogin" placeholder="Login" value="<?php echo @$paramInsert['paramLogin']; ?>"><br />
 
                     Senha:<br />
-                    <input type="password" name="paramSenha" placeholder="*****" value="<?php echo @$paramInsert['paramSenha']; ?>"><br /><br />
+                    <input type="password" name="paramSenha" id="paramSenha" placeholder="*****" value="<?php echo @$paramInsert['paramSenha']; ?>"><br /><br />
 
                     <input type="submit" name="btLogin" value="Entrar" class="login"><br>
                 </form>

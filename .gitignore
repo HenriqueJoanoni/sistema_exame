@@ -1,3 +1,4 @@
+#arquivos e pastas a serem ignorados nos próximos commits
 nbproject/
 .idea/
 vendor/
