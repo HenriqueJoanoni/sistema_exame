@@ -23,12 +23,8 @@ try {
 
     @$result = pg_query(ConnectPG(), $sql);
     @$funcionario = pg_fetch_array($result,NULL,PGSQL_ASSOC);
-    //var_dump($funcionario);
     
     if (Gravar()) {
-        //var_dump($_POST);exit;
-        //$paramInsert = $_POST;
-        //validaForm();
         $cpf = limpaString($_POST['cpf']);
         $tel = limpaString($_POST['telefone']);
         $admissao = date("Y-m-d", strtotime(str_replace('/', '-', $_POST['dt_admissao'])));

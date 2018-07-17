@@ -2,11 +2,7 @@
 include 'apoio/assets.php';
 include 'apoio/mensagens.php';
 
-/*$valorInicial = array('id_funcao','id_cidade','id_setor','nome','dt_nascimento','telefone','rg','cpf','email','dt_admissao','ativo','cidade'
-                       ,'bairro','cep','uf','rua','carga_horaria','salario');*/
-
 $valorInicial = array('nome','data_de_nascimento','telefone','rg','cpf','email','dt_admissao','cidade','bairro','cep','uf','rua');
-$obrigatorio = $valorInicial;
 
 $funcId = isset($_POST['id_funcao']) ? $_POST['id_funcao'] : '';
 $setorId = isset($_POST['id_setor']) ? $_POST['id_setor'] : '';
@@ -23,7 +19,7 @@ try {
 
     if (Gravar()) {
         try {
-            $paramInsert = $_POST;
+            $paramInsert = @pg_escape_string($_POST);
             
             $cpf = limpaString($_POST['cpf']);
             $tel = limpaString($_POST['telefone']);
@@ -31,7 +27,7 @@ try {
             $nascimento = date("Y-m-d", strtotime(str_replace('/', '-', $_POST['data_de_nascimento'])));
 
             $transac = 0;
-            validaForm();
+            //validaForm();
             $result = pg_query(ConnectPG(), 'begin');
             if (!$result) {throw new Exception("Não foi possível iniciar a Transação!");}
             $transac = 1;
@@ -44,7 +40,7 @@ try {
             $id_cidade = pg_fetch_array($result,NULL,PGSQL_NUM);
             
             $sql = sprintf("INSERT INTO funcionario (id_funcao, id_cidade, id_setor, nome, dt_nascimento, telefone, rg, cpf,email, dt_admissao,ativo) "
-                    . "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", QuotedStr($_POST['id_funcao']), 
+                    . "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",QuotedStr($_POST['id_funcao']), 
                     QuotedStr($id_cidade[0]), QuotedStr($_POST['id_setor']), QuotedStr($_POST['nome']), 
                     QuotedStr($nascimento), QuotedStr($tel), QuotedStr($_POST['rg']), QuotedStr($cpf), QuotedStr($_POST['email']), 
                     QuotedStr($admissao), QuotedStr(@$_POST['ativo']));
@@ -61,10 +57,10 @@ try {
 
                 throw new Exception("Não foi possível cadastrar o usuário!!");
             }
-            echo "<SCRIPT type='text/javascript'> //not showing me this
-                    alert('Funcionário cadastrado com Sucesso!');
-                    window.location.replace(\"listaFuncionario.php\");
-                    </SCRIPT>";
+            echo "<SCRIPT type='text/javascript'> 
+                        alert('Funcionário cadastrado com Sucesso!');
+                        window.location.replace(\"listaFuncionario.php\");
+                  </SCRIPT>";
         } catch (Exception $ex) {
             if ($transac) {
                 pg_query(ConnectPG(), 'rollback');
@@ -84,7 +80,7 @@ try {
         <div class="formcadastro">
             <h2 style="text-align: center">Cadastro de Funcionários</h2>
             <fieldset>
-                <form action="cadastraFuncionario.php" method="POST">
+                <form action="cadastraFuncionario.php" method="POST" id="cadFuncionario">
                     <input type="hidden" name="acao" value="<?php echo $acao; ?>">
                     <input type="hidden" name="id_funcionario" value="<?php echo $funcId; ?>">
                     <!--DADOS PESSOAIS --> 
@@ -129,19 +125,19 @@ try {
                             </tr>
                             <tr>
                                 <td><label>Cep: </label></td>
-                                <td><input name="cep" type="text" id="cep" value="" placeholder="00000-000" size="10" maxlength="9" onblur="pesquisacep(this.value);"/></td>
+                                <td><input name="cep" type="text" id="cep" value="<?php echo $paramInsert['cep']; ?>" placeholder="00000-000" size="10" maxlength="9" onblur="pesquisacep(this.value);"/></td>
                                 <td><label>Rua:</label></td>
-                                <td><input name="rua" type="text" id="rua" placeholder="Nome da Rua" size="16" /></td>
+                                <td><input name="rua" type="text" id="rua" placeholder="Nome da Rua" size="16" value="<?php echo $paramInsert['rua'];?>"/></td>
                             </tr>
                             <tr>
                                 <td><label>Bairro:</label></td>
-                                <td><input name="bairro" type="text" id="bairro" placeholder="Logradouro" size="16" /></td>
+                                <td><input name="bairro" type="text" id="bairro" placeholder="Logradouro" size="16" value="<?php echo $paramInsert['bairro'];?>"/></td>
                                 <td><label>Cidade:</label></td>
-                                <td><input name="cidade" type="text" id="cidade" placeholder="Nome da Cidade" size="16" /></td>
+                                <td><input name="cidade" type="text" id="cidade" placeholder="Nome da Cidade" size="16" value="<?php echo $paramInsert['cidade'];?>"/></td>
                             </tr>
                             <tr>
                                 <td><label>Estado:</label></td>
-                                <td><input name="uf" type="text" id="uf" placeholder="UF" size="2" /></td>
+                                <td><input name="uf" type="text" id="uf" placeholder="UF" size="2" value="<?php echo $paramInsert['uf'];?>"/></td>
                             </tr>
                         </table>
                     </fieldset>

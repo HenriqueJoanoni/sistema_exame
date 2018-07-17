@@ -10,14 +10,14 @@ $acao = isset($_POST['btCancelar']) ? ACAO_CONSULTAR : (isset($_REQUEST['acao'])
 $paramInsert = ValorInicio($valorInicial);
 try {
     if (Gravar()) {
-        $paramInsert = $_POST;
+        $paramInsert = @pg_escape_string($_POST);
         
         $telefone = limpaString($_POST['telefone']);
         $cnpj = limpaString($_POST['cnpj']);
 
         try {
             $transac = 0;
-            validaForm();
+            //validaForm();
             $result = pg_query(ConnectPG(), 'begin');
             if (!$result) {throw new Exception("Não foi possível inciar a transação!");}
             $transac = 1;
@@ -46,7 +46,7 @@ try {
                 throw new Exception("Não foi possível cadastrar a clínica!!");
             }
 
-            echo "<SCRIPT type='text/javascript'> //not showing me this
+            echo "<SCRIPT type='text/javascript'>
                     alert('Clínica cadastrada com Sucesso!');
                     window.location.replace(\"index.php\");
                     </SCRIPT>";

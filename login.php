@@ -9,12 +9,12 @@ $paramInsert = ValorInicio($valorInicial);
 if (isset($_POST['paramLogin']) && $_POST['paramLogin'] != "" && $_POST['paramSenha'] != "") {
 
     // RECEBE AS VARIÁVEIS VIA POST E TRATA O SQL INJECTION FINALIZANDO COM A CODIFICAÇÃO MD5
-        $LoginPost = $_POST['paramLogin'];
-        $senhaPost = $_POST['paramSenha'];
+        $LoginPost = pg_escape_string($_POST['paramLogin']);
+        $senhaPost = pg_escape_string($_POST['paramSenha']);
 
     // VERIFICA SE EXISTE USUÁRIOS CADASTRADOS COM O LOGIN E SENHA INFORMADO
     $sql = sprintf("SELECT id_login,email,senha FROM login WHERE email = %s AND senha = %s", 
-            QuotedStr($LoginPost), QuotedStr(md5($senhaPost)));
+                    QuotedStr($LoginPost), QuotedStr(md5($senhaPost)));
     $result = pg_query(ConnectPG(), $sql);
     $Res = pg_fetch_assoc($result);
 
