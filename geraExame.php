@@ -7,7 +7,7 @@ include 'apoio/mensagens.php';
 ?>
 <html>
     <?php include 'apoio/header.php'; ?>
-    <h2>Gerador de  Exame</h2>
+    <h2>Gerar de  Exame Admissional/Demissional</h2>
     <div class="body">
         <div class="geraExame">
             <div class="mapa">

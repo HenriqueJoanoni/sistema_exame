@@ -169,7 +169,7 @@ try {
                         </table>
                     </fieldset>
                     <br />
-                    <input type="button" name="btCancelar" value="Cancelar" onclick="javascript: location.href='index.php';">
+                    <input type="button" name="btCancelar" value="Cancelar" onclick="javascript: window.history.back();">
                     <input type="submit" name="btEnviar" value="Cadastrar">
                 </form>
             </fieldset>

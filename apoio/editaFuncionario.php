@@ -11,81 +11,8 @@ $acao = isset($_POST['btCancelar']) ? ACAO_CONSULTAR : (isset($_REQUEST['acao'])
 @$idFuncionario = $_GET['id_funcionario'];
 @$idCidade = $_GET['id_cidade'];
 
-if (Alterar()) {
-    if (isset($_POST['btCarregaFuncao'])) {
-        $paramInsert = $_POST;
-    }
-    try {
-        $idFuncionario = $_REQUEST['id_funcionario'];
-        if (Gravar()) {
-            $cpf = limpaString($_POST['cpf']);
-            $tel = limpaString($_POST['telefone']);
-            $admissao = date("Y-m-d", strtotime(str_replace('/', '-', $_POST['dt_admissao'])));
-            $demissao = date("Y-m-d", strtotime(str_replace('/', '-', $_POST['dt_demissao'])));
-            $nascimento = date("Y-m-d", strtotime(str_replace('/', '-', $_POST['dt_nascimento'])));
-
-            $transac = 0;
-            $sql = pg_query(ConnectPG(), 'begin');
-            if (!$sql) {
-                throw new Exception("Não foi possível iniciar a transação");
-            }
-            $transac = 1;
-
-            $sql = sprintf("UPDATE endereco SET (nome_cidade,logradouro,cep,rua,estado) = (%s,%s,%s,%s,%s) "
-                    . "WHERE id_cidade =" . $_POST['id_cidade'], 
-                    QuotedStr($_POST['cidade']), QuotedStr($_POST['bairro']), QuotedStr($_POST['cep']), 
-                    QuotedStr($_POST['rua']), QuotedStr($_POST['uf']));
-            $result = pg_query(ConnectPG(), $sql);
-            if (!$result) {
-                throw new Exception("Não foi possível Editar o registro do endereço");
-            }
-
-            $sql = sprintf("UPDATE funcionario SET (id_funcao, id_cidade, id_setor, nome, dt_nascimento, telefone, rg, cpf,email, "
-                    . "dt_admissao,dt_demissao,ativo) "
-                    . "= (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) WHERE id_funcionario = " 
-                    . $_POST['id_funcionario'], QuotedStr($_POST['id_funcao']), QuotedStr($_POST['id_cidade']), 
-                    QuotedStr($_POST['id_setor']), QuotedStr($_POST['nome']), QuotedStr($nascimento), QuotedStr($tel), 
-                    QuotedStr($_POST['rg']), QuotedStr($cpf), QuotedStr($_POST['email']), QuotedStr($admissao), 
-                    QuotedStr($demissao), QuotedStr(@$_POST['ativo']));
-            @$result = pg_query(ConnectPG(), $sql);
-
-            $sql = pg_query(ConnectPG(), 'commit');
-            if (!$sql) {
-                throw new Exception("Não foi possível finalizar a transação!");
-            }
-
-            if (!$result) {
-                foreach ($_POST as $campo => $valor) {
-                    $paramInsert[$campo] = $valor;
-                }
-                throw new Exception("Não foi possível Editar o registro do funcionário");
-            }
-            Alert("Registro do Funcionário Editado com Sucesso!");
-        } else {
-            $sql = "SELECT a.id_cidade,a.id_funcionario,a.nome,to_char(a.dt_nascimento, 'dd/mm/yyyy') as dt_nascimento,a.rg,a.cpf,a.email,
-            to_char(a.dt_admissao, 'dd/mm/yyyy') as dt_admissao,to_char(a.dt_demissao, 'dd/mm/yyyy') as dt_demissao,a.telefone,a.ativo, 
-            b.nome_cidade,b.logradouro,b.cep,b.rua,b.estado,c.descricao,d.nome_setor
-                    FROM funcionario a
-                    INNER JOIN endereco b ON a.id_cidade = b.id_cidade
-                    INNER JOIN funcao c ON a.id_funcao = c.id_funcao
-                    INNER JOIN setor d ON a.id_setor = d.id_setor
-                    WHERE id_funcionario =  $idFuncionario";
-
-            $result = pg_query(ConnectPG(), $sql);
-
-            if (!$result) {
-                foreach ($_POST as $campo => $valor) {
-                    $paramInsert[$campo] = $valor;
-                }
-                throw new Exception("Não foi possível consultar o registro deste funcionário");
-            }
-        }
-    } catch (Exception $ex) {
-        $msg = $ex->getMessage();
-        Alert($msg);
-    }
-}
-$sql = "SELECT c.id_funcao,d.id_setor,a.id_cidade,a.id_funcionario,a.nome,to_char(a.dt_nascimento, 'dd/mm/yyyy') as dt_nascimento,a.rg,a.cpf,a.email,
+try {
+    $sql = "SELECT a.id_cidade,a.id_funcionario,a.nome,to_char(a.dt_nascimento, 'dd/mm/yyyy') as dt_nascimento,a.rg,a.cpf,a.email,
             to_char(a.dt_admissao, 'dd/mm/yyyy') as dt_admissao,to_char(a.dt_demissao, 'dd/mm/yyyy') as dt_demissao,a.telefone,a.ativo, 
             b.nome_cidade,b.logradouro,b.cep,b.rua,b.estado,c.descricao,d.nome_setor
                     FROM funcionario a
@@ -97,9 +24,64 @@ $sql = "SELECT c.id_funcao,d.id_setor,a.id_cidade,a.id_funcionario,a.nome,to_cha
     @$result = pg_query(ConnectPG(), $sql);
     @$funcionario = pg_fetch_array($result,NULL,PGSQL_ASSOC);
     
-    //print_r($funcionario);
-    
-if(!$result){throw new Exception("Não foi possível buscar o registro do Funcionário!!");}
+    if (Gravar()) {
+        $cpf = limpaString($_POST['cpf']);
+        $tel = limpaString($_POST['telefone']);
+        $admissao = date("Y-m-d", strtotime(str_replace('/', '-', $_POST['dt_admissao'])));
+        $demissao = date("Y-m-d", strtotime(str_replace('/', '-', $_POST['dt_demissao'])));
+        $nascimento = date("Y-m-d", strtotime(str_replace('/', '-', $_POST['dt_nascimento'])));
+
+        $transac = 0;
+        $sql = pg_query(ConnectPG(), 'begin');
+        if (!$sql) {throw new Exception("Não foi possível iniciar a transação");}
+        $transac = 1;
+
+        $sql = sprintf("UPDATE endereco SET (nome_cidade,logradouro,cep,rua,estado) = (%s,%s,%s,%s,%s) WHERE id_cidade =".$_POST['id_cidade'], 
+        QuotedStr($_POST['cidade']), QuotedStr($_POST['bairro']), QuotedStr($_POST['cep']), QuotedStr($_POST['rua']),QuotedStr($_POST['uf']));
+        $result = pg_query(ConnectPG(), $sql);
+        if (!$result) {throw new Exception("Não foi possível Editar o registro do endereço");}
+        
+
+        $sql = sprintf("UPDATE funcionario SET (id_funcao, id_cidade, id_setor, nome, dt_nascimento, telefone, rg, cpf,email, dt_admissao,dt_demissao,ativo) "
+                . "= (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) WHERE id_funcionario = ".$_POST['id_funcionario'], 
+                QuotedStr($_POST['id_funcao']), QuotedStr($_POST['id_cidade']), QuotedStr($_POST['id_setor']), 
+                QuotedStr($_POST['nome']),QuotedStr($nascimento), QuotedStr($tel), QuotedStr($_POST['rg']), 
+                QuotedStr($cpf), QuotedStr($_POST['email']), QuotedStr($admissao), QuotedStr($demissao),QuotedStr(@$_POST['ativo']));
+        @$result = pg_query(ConnectPG(), $sql);
+
+        $sql = pg_query(ConnectPG(), 'commit');
+        if (!$sql) {throw new Exception("Não foi possível finalizar a transação!");}
+        
+        if (!$result) {
+            foreach ($_POST as $campo => $valor) {
+                $paramInsert[$campo] = $valor;
+            }
+            throw new Exception("Não foi possível Editar o registro do funcionário");
+        }
+        Alert("Registro do Funcionário Editado com Sucesso!");
+    } else {
+        $sql = "SELECT a.id_cidade,a.id_funcionario,a.nome,to_char(a.dt_nascimento, 'dd/mm/yyyy') as dt_nascimento,a.rg,a.cpf,a.email,
+            to_char(a.dt_admissao, 'dd/mm/yyyy') as dt_admissao,to_char(a.dt_demissao, 'dd/mm/yyyy') as dt_demissao,a.telefone,a.ativo, 
+            b.nome_cidade,b.logradouro,b.cep,b.rua,b.estado,c.descricao,d.nome_setor
+                    FROM funcionario a
+                    INNER JOIN endereco b ON a.id_cidade = b.id_cidade
+                    INNER JOIN funcao c ON a.id_funcao = c.id_funcao
+                    INNER JOIN setor d ON a.id_setor = d.id_setor
+                    WHERE id_funcionario =  $idFuncionario";
+
+        $result = pg_query(ConnectPG(), $sql);
+        
+        if (!$result) {
+            foreach ($_POST as $campo => $valor) {
+                $paramInsert[$campo] = $valor;
+            }
+            throw new Exception("Não foi possível consultar o registro deste funcionário");
+        }
+    }
+} catch (Exception $ex) {
+    $msg = $ex->getMessage();
+    Alert($msg);
+}
 ?>
 <html>
 <?php include 'apoio/header.php'; ?>
@@ -190,7 +172,7 @@ if(!$result){throw new Exception("Não foi possível buscar o registro do Funcio
                                 <td><label for="id_funcao">Função:</label></td>
                                 <td align="left">
                                     <select size="1" name="id_funcao">
-                                        <?php echo GetFuncao($setorId,$funcId) ?>
+                                        <?php echo GetFuncao($funcId) ?>
                                     </select>
                                 </td>
                             </tr>

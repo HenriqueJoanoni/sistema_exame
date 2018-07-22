@@ -102,7 +102,7 @@ function GetSetor($setorId = '') {
     $result = @pg_query(ConnectPG(), $sql);
 
     $sel = $setorId == '' ? 'selected="selected"' : '';
-
+    
     $listaSetor = "<option value=\"\"$sel>-------</option>";
     while ($row = @pg_fetch_array($result, null, PGSQL_ASSOC)) {
         $funcBanco = $row['id_setor'];
