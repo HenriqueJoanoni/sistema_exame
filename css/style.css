@@ -100,17 +100,21 @@ body{
     margin-bottom: 4px;
     margin-left: 800px;
 }
+.campoPesquisa{
+    margin-bottom: 10px;
+    margin-left: 400px;
+}
 .geraExame{
     width: 1200px;
     margin: auto;
     text-align: center;
     display: table;
-    background-color: #8B8970;
+    //background-color: #8B8970;
 }
-.mapa{
+/*.mapa{
     margin-left: 45%;
     margin-top: 20px;
-}
+}*/
 .formExame{
     float: left;
     width: 30%;

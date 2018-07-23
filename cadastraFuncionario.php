@@ -150,7 +150,7 @@ try {
                                 <td><label for="id_setor">Setor</label></td>
                                 <td align="left">
                                     <select size="1" name="id_setor">
-                                        <?php echo GetSetor($setorId) ?>
+                                        <?php echo GetSetor($setorId,null) ?>
                                     </select>
                                     <input type="submit" name="btCarregaFuncao" value="..."/>
                                 </td>
