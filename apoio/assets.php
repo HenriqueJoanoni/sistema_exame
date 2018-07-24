@@ -133,7 +133,7 @@ function GetFuncao($setorId, $funcId = '', $idFuncionario = '') {
         while ($row = @pg_fetch_array($result, null, PGSQL_ASSOC)) {
             $funcBanco = $row['id_funcao'];
             $sel = ($funcId == $funcBanco) ? 'selected="selected"' : '';
-            $funcaoLista .= sprintf("<option value=\"%s\"%s>%s</option>", $row['id_funcao'], $sel, $row['descricao']);
+            $funcaoLista .= sprintf("<option value=\"%s\"%s>%s</option>", $row['id_funcao']."|".$row['descricao'], $sel, $row['descricao']);
         }
     } else {
         $sql = sprintf("SELECT id_funcao,descricao FROM funcao WHERE id_setor = %s ORDER BY 1", $setorId);
@@ -146,7 +146,7 @@ function GetFuncao($setorId, $funcId = '', $idFuncionario = '') {
         while ($row = @pg_fetch_array($result, null, PGSQL_ASSOC)) {
             $funcBanco = $row['id_funcao'];
             $sel = ($funcId == $funcBanco) ? 'selected="selected"' : '';
-            $funcaoLista .= sprintf("<option value=\"%s\"%s>%s</option>", $row['id_funcao'], $sel, $row['descricao']);
+            $funcaoLista .= sprintf("<option value=\"%s\"%s>%s</option>", $row['id_funcao']."|".$row['descricao'], $sel, $row['descricao']);
         }
     }
     return $funcaoLista;
@@ -178,7 +178,7 @@ function GetExame($exameId = '') {
     while ($row = @pg_fetch_array($result, null, PGSQL_ASSOC)) {
         $funcBanco = $row['id_exame'];
         $sel = ($exameId == $funcBanco) ? 'selected="selected"' : '';
-        $listaExame .= sprintf("<option value=\"%s\"%s>%s</option>", $row['id_exame'], $sel, $row['exame_descricao']);
+        $listaExame .= sprintf("<option value=\"%s\"%s>%s</option>", $row['id_exame']."|".$row['exame_descricao'], $sel, $row['exame_descricao']);
     }
     return $listaExame;
 }

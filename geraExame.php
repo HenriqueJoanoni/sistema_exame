@@ -2,7 +2,7 @@
 include 'apoio/assets.php';
 include 'apoio/mensagens.php';
 
-$valorInicial = array('id_funcionario','id_setor','id_funcao','nome','nome_setor','descricao','id_laboratorio','nome_lab','tipo_exame','exame_descricao');
+$valorInicial = array('id_funcionario', 'id_setor', 'id_funcao', 'nome', 'nome_setor', 'descricao', 'id_laboratorio', 'nome_lab', 'tipo_exame', 'exame_descricao');
 $clinicaId = isset($_POST['id_laboratorio']) ? $_POST['id_laboratorio'] : '';
 $exameId = isset($_POST['id_exame']) ? $_POST['id_exame'] : '';
 $funcId = isset($_POST['id_funcao']) ? $_POST['id_funcao'] : '';
@@ -11,20 +11,21 @@ $id_funcionario = 0;
 
 $regFunc = ValorInicio($valorInicial);
 $acao = isset($_REQUEST['acao']) ? $_REQUEST['acao'] : ACAO_CONSULTAR;
-try{
+try {
     $campoConsultar = isset($_POST['btConsultar']) ? $_POST['campoConsultar'] : '';
-    
+
     if (isset($_POST['btConsultar'])) {
         $sql = sprintf("SELECT a.id_funcionario,b.id_setor,c.id_funcao,a.nome, b.nome_setor, c.descricao
                             FROM funcionario a
                             JOIN setor b ON a.id_setor = b.id_setor
                             JOIN funcao c ON a.id_funcao = c.id_funcao
                             WHERE a.nome LIKE %s", PrepararLike($campoConsultar));
-        $result = pg_query(ConnectPG(),$sql);
+        $result = pg_query(ConnectPG(), $sql);
         $regFunc = pg_fetch_assoc($result);
     }
+
     if (isset($_POST['btEnviar'])) {
-        
+
         foreach ($_POST as $campo => $valor) {
             $regFunc[$campo] = $valor;
         }

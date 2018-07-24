@@ -21,6 +21,7 @@ try {
         try {
             $paramInsert = @pg_escape_string($_POST);
             
+            $funcao = explode("|", $_POST['id_funcao']);
             $cpf = limpaString($_POST['cpf']);
             $tel = limpaString($_POST['telefone']);
             $admissao = date("Y-m-d", strtotime(str_replace('/', '-', $_POST['dt_admissao'])));
@@ -40,7 +41,7 @@ try {
             $id_cidade = pg_fetch_array($result,NULL,PGSQL_NUM);
             
             $sql = sprintf("INSERT INTO funcionario (id_funcao, id_cidade, id_setor, nome, dt_nascimento, telefone, rg, cpf,email, dt_admissao,ativo) "
-                    . "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",QuotedStr($_POST['id_funcao']), 
+                    . "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",QuotedStr($funcao[0]), 
                     QuotedStr($id_cidade[0]), QuotedStr($_POST['id_setor']), QuotedStr($_POST['nome']), 
                     QuotedStr($nascimento), QuotedStr($tel), QuotedStr($_POST['rg']), QuotedStr($cpf), QuotedStr($_POST['email']), 
                     QuotedStr($admissao), QuotedStr(@$_POST['ativo']));
@@ -56,11 +57,12 @@ try {
                 }
 
                 throw new Exception("Não foi possível cadastrar o usuário!!");
-            }
-            echo "<SCRIPT type='text/javascript'> 
+            } else {
+                echo "<SCRIPT type='text/javascript'> 
                         alert('Funcionário cadastrado com Sucesso!');
                         window.location.replace(\"listaFuncionario.php\");
-                  </SCRIPT>";
+                    </SCRIPT>";
+            }
         } catch (Exception $ex) {
             if ($transac) {
                 pg_query(ConnectPG(), 'rollback');

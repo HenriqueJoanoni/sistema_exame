@@ -9,12 +9,12 @@ $idFuncionario = 0;
 
 @$idFuncionario = $_POST['id_funcionario'];
 @$idLab = $_POST['id_laboratorio'];
-@$idFuncao = $_POST['id_funcao'];
-@$idExame = $_POST['id_exame'];
+
+$exame = explode("|", $_POST['id_exame']);
+$funcao = explode("|", $_POST['id_funcao']);
 
  if (Gravar()) {
     try {
-        $exame = @pg_escape_string($_POST);
         $dataIni = date('Y-m-d');
         
         $transac = 0;
@@ -22,12 +22,12 @@ $idFuncionario = 0;
         if (!$result) {throw new Exception("Não foi possível iniciar a Transação!");}
         $transac = 1;
         
-        $sql = sprintf("UPDATE exame SET id_laboratorio = %s ,dt_solicitacao = %s WHERE id_exame = %s;",$idLab, QuotedStr($dataIni),$idExame);
+        $sql = sprintf("UPDATE exame SET id_laboratorio = %s ,dt_solicitacao = %s WHERE id_exame = %s;",$idLab, QuotedStr($dataIni),$exame[0]);
         $result = pg_query(ConnectPG(),$sql);
         if(!$result){throw new Exception("Não foi possível cadastrar o registro do exame!");}
         
         $sql = sprintf("INSERT INTO historico_funcional (id_funcionario,id_funcao,id_exame,dt_inicio,id_laboratorio) 
-                        VALUES (%s,%s,%s,%s,%s);", $idFuncionario, $idFuncao, $idExame,QuotedStr($dataIni),$idLab);
+                        VALUES (%s,%s,%s,%s,%s);", $idFuncionario, $funcao[0], $exame[0],QuotedStr($dataIni),$idLab);
         $result = pg_query(ConnectPG(),$sql);
         if(!$result){throw new Exception("Não foi possível registrar este histórico!");}
 
@@ -63,22 +63,32 @@ $idFuncionario = 0;
             <b>Cuiabá - <?php echo date('d M Y')?></b>
         </div>
     </div>
-    <h2 align="center">Simples IP<br>Comércio e serviços de Tecnologia da Informação ltda.</h2>    
+    <div class="titulo">
+        <h1 align="center">ENCAMINHAMENTO PARA EXAME</h1>
+    </div>
+    <div class="titulo2">
+        <h2 align="left">Empregador: Simples IP Comércio e serviços de Tecnologia da Informação ltda.</h2>
+        <h2>CNPJ: 13.157.305/0001-53</h2>
+    </div>
+    <div class="corposolicita">
+        <b>Solicitação de Exame <?php echo $exame[1]; ?>.<br><br>
+        <b>Empregado(a): <?php echo $_POST['nome'];?></b><br><br>
+        <b>Na função de: <?php echo $funcao[1]; ?></b>
+    </div>
 </body>
-
-
 <?php
 // armazena o html no cache
 $html = ob_get_contents();
 ob_end_clean();
 
 // define um nome randomico para o arquivo pdf
-$arquivo = md5(time().rand(0, 999)).'.pdf';
+//$arquivo = md5(time().rand(0, 999)).'.pdf';
+$arquivo = $_POST['nome']."_".$exame[1].'.pdf';
 
 // define uma pasta para os arquivos temporários (necessário permissão de escrita no linux)
 $mpdf = new Mpdf\Mpdf(['tempDir' => __DIR__.'/tmp/custom']);
 $mpdf->WriteHTML($html); // prepara a escrita do html no arquivo
-$mpdf->Output($arquivo,'I'); // transforma o html e apresenta o arquivo de acordo com as diretivas descritas abaixo.
+$mpdf->Output($arquivo,'D'); // transforma o html e apresenta o arquivo de acordo com as diretivas descritas abaixo.
 
 // I = abre no browser
 // D = faz download do arquivo

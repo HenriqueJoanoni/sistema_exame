@@ -23,6 +23,7 @@ if (Alterar()) {
             $admissao = date("Y-m-d", strtotime(str_replace('/', '-', $_POST['dt_admissao'])));
             $demissao = date("Y-m-d", strtotime(str_replace('/', '-', $_POST['dt_demissao'])));
             $nascimento = date("Y-m-d", strtotime(str_replace('/', '-', $_POST['dt_nascimento'])));
+            $funcao = explode("|", $_POST['id_funcao']);
 
             $transac = 0;
             $sql = pg_query(ConnectPG(), 'begin');
@@ -43,7 +44,7 @@ if (Alterar()) {
             $sql = sprintf("UPDATE funcionario SET (id_funcao, id_cidade, id_setor, nome, dt_nascimento, telefone, rg, cpf,email, "
                     . "dt_admissao,dt_demissao,ativo) "
                     . "= (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) WHERE id_funcionario = " 
-                    . $_POST['id_funcionario'], QuotedStr($_POST['id_funcao']), QuotedStr($_POST['id_cidade']), 
+                    . $_POST['id_funcionario'], QuotedStr($funcao[0]), QuotedStr($_POST['id_cidade']), 
                     QuotedStr($_POST['id_setor']), QuotedStr($_POST['nome']), QuotedStr($nascimento), QuotedStr($tel), 
                     QuotedStr($_POST['rg']), QuotedStr($cpf), QuotedStr($_POST['email']), QuotedStr($admissao), 
                     QuotedStr($demissao), QuotedStr(@$_POST['ativo']));
@@ -59,8 +60,14 @@ if (Alterar()) {
                     $paramInsert[$campo] = $valor;
                 }
                 throw new Exception("Não foi possível Editar o registro do funcionário");
+            }else{
+                
+                echo "<SCRIPT type='text/javascript'> 
+                        alert('Registro do Funcionário Editado com Sucesso!');
+                        window.location.replace(\"listaFuncionario.php\");
+                    </SCRIPT>";
             }
-            Alert("Registro do Funcionário Editado com Sucesso!");
+            
         } else {
             $sql = "SELECT a.id_cidade,a.id_funcionario,a.nome,to_char(a.dt_nascimento, 'dd/mm/yyyy') as dt_nascimento,a.rg,a.cpf,a.email,
             to_char(a.dt_admissao, 'dd/mm/yyyy') as dt_admissao,to_char(a.dt_demissao, 'dd/mm/yyyy') as dt_demissao,a.telefone,a.ativo, 
@@ -109,7 +116,7 @@ if(!$result){throw new Exception("Não foi possível buscar o registro do Funcio
             <form action="editaFuncionario.php" method="POST">
                 <input type="hidden" name="acao" value="<?php echo $acao; ?>">
                 <input type="hidden" name="id_funcionario" value="<?php echo $idFuncionario; ?>">
-                <input type="hidden" name="id_cidade" value="<?php echo $idCidade; ?>"
+                <input type="hidden" name="id_cidade" value="<?php echo $funcionario['id_cidade']; ?>"
                 <!--DADOS PESSOAIS --> 
                     <fieldset>
                         <legend>Dados Pessoais</legend>
@@ -178,7 +185,7 @@ if(!$result){throw new Exception("Não foi possível buscar o registro do Funcio
                                 <td><label for="id_Setor">Setor</label></td>
                                 <td align="left">
                                     <select size="1" name="id_setor">
-                                        <?php echo GetSetor($setorId) ?>
+                                        <?php echo GetSetor($setorId,$setorId) ?>
                                     </select>
                                     <input type="submit" name="btCarregaFuncao" value="..."/>
                                 </td>

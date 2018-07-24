@@ -52,14 +52,14 @@ try {
                 FROM funcionario a
                 INNER JOIN funcao b ON a.id_funcao = b.id_funcao
                 INNER JOIN endereco c ON a.id_cidade = c.id_cidade
-                WHERE id_funcionario = $id_funcionario AND a.dt_demissao IS NULL";
+                WHERE id_funcionario = $id_funcionario";
     }
 
     $sql = "SELECT a.id_funcionario,a.id_cidade,a.nome, a.dt_nascimento AS \"data de nascimento\", a.email, a.dt_admissao AS admissao, b.descricao AS funcao, c.nome_cidade AS cidade
             FROM funcionario a
             INNER JOIN funcao b ON a.id_funcao = b.id_funcao
             INNER JOIN endereco c ON a.id_cidade = c.id_cidade
-            WHERE 1=1 $consultar AND dt_demissao IS NULL ORDER BY a.nome";
+            WHERE 1=1 $consultar ORDER BY a.nome";
 
     $result = pg_query(ConnectPG(), $sql);
 

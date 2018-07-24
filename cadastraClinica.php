@@ -86,7 +86,7 @@ try {
                             <tr>
                                 <td><label for="cnpj">CNPJ: </label></td>
                                 <td align="left">
-                                    <input type="text" name="cnpj" size="16" onkeydown="mascara(this,cnpjMask)" placeholder="CNPJ" value="<?php echo $paramInsert['cnpj']; ?>"> 
+                                    <input type="text" name="cnpj" size="16" onkeydown="mascara(this,cnpjMask)" placeholder="CNPJ" maxlength="18" value="<?php echo $paramInsert['cnpj']; ?>"> 
                                 </td>
                             </tr>
                             <tr>

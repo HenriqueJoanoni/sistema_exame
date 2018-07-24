@@ -12,18 +12,6 @@ body{
     color: black;
     margin-top: 1%;
 }
-/*.imagem{
-    float: left;
-    height: 40px;
-    line-height: 40px;
-}
-.toporight{
-    float: right;
-    margin-right:20px;
-    height: 40px;
-    line-height: 40px;
-}
-*/
 .imagem {
     width: 38%;
     float:left;
@@ -40,4 +28,16 @@ body{
     padding: 40vw 0vw 5vw 0vw;
     min-width:40vw;
     float:right;
+}
+.titulo{
+    font-size: 12px;
+    text-decoration: underline;
+}
+.titulo2{
+    font-size: 10px;
+    margin-left: 50px;
+}
+.corposolicita{
+    margin-left: 50px;
+    margin-top: 50px;
 }
