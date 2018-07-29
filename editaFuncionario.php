@@ -66,27 +66,8 @@ if (Alterar()) {
                         alert('Registro do Funcionário Editado com Sucesso!');
                         window.location.replace(\"listaFuncionario.php\");
                     </SCRIPT>";
-            }
-            
-        } else {
-            $sql = "SELECT a.id_cidade,a.id_funcionario,a.nome,to_char(a.dt_nascimento, 'dd/mm/yyyy') as dt_nascimento,a.rg,a.cpf,a.email,
-            to_char(a.dt_admissao, 'dd/mm/yyyy') as dt_admissao,to_char(a.dt_demissao, 'dd/mm/yyyy') as dt_demissao,a.telefone,a.ativo, 
-            b.nome_cidade,b.logradouro,b.cep,b.rua,b.estado,c.descricao,d.nome_setor
-                    FROM funcionario a
-                    INNER JOIN endereco b ON a.id_cidade = b.id_cidade
-                    INNER JOIN funcao c ON a.id_funcao = c.id_funcao
-                    INNER JOIN setor d ON a.id_setor = d.id_setor
-                    WHERE id_funcionario =  $idFuncionario";
-
-            $result = pg_query(ConnectPG(), $sql);
-
-            if (!$result) {
-                foreach ($_POST as $campo => $valor) {
-                    $paramInsert[$campo] = $valor;
-                }
-                throw new Exception("Não foi possível consultar o registro deste funcionário");
-            }
-        }
+            }  
+        } 
     } catch (Exception $ex) {
         $msg = $ex->getMessage();
         Alert($msg);
@@ -110,7 +91,7 @@ if(!$result){throw new Exception("Não foi possível buscar o registro do Funcio
 ?>
 <html>
 <?php include 'apoio/header.php'; ?>
-    <div class="body">
+       <div class="body">
         <h2 style="text-align: center">Edição de Funcionários</h2>
         <fieldset>
             <form action="editaFuncionario.php" method="POST">

@@ -23,7 +23,14 @@ try {
                 $paramInsert[$campo] = $valor;
             }
             throw new Exception("As senhas não conferem!");
-        } else {
+        }elseif ($_POST['paramEmail'] && !$_POST['paramSenha'] || !$_POST['repeteSenha']) {
+            
+            foreach ($_POST as $campo => $valor) {
+                $paramInsert[$campo] = $valor;
+            }
+            throw new Exception("Existem campos vazios !");
+            
+        }else {
             $sql = sprintf("UPDATE login SET senha = %s WHERE email = %s", QuotedStr(md5($paramSenha)), QuotedStr(pg_escape_string($paramEmail)));
             $result = pg_query(ConnectPG(), $sql);
 

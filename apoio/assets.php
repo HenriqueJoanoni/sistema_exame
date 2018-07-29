@@ -162,7 +162,7 @@ function GetClinica($clinicaId = '') {
     while ($row = @pg_fetch_array($result, null, PGSQL_ASSOC)) {
         $funcBanco = $row['id_laboratorio'];
         $sel = ($clinicaId == $funcBanco) ? 'selected="selected"' : '';
-        $listaLab .= sprintf("<option value=\"%s\"%s>%s</option>", $row['id_laboratorio'], $sel, $row['nome_lab']);
+        $listaLab .= sprintf("<option value=\"%s\"%s>%s</option>", $row['id_laboratorio']."|".$row['nome_lab'], $sel, $row['nome_lab']);
     }
     return $listaLab;
 }

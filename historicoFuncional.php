@@ -24,7 +24,7 @@ try {
         $historicoLista = '';
         while ($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
             //print_r($row);
-            $editar = sprintf('<a href="#?acao=%s&id_historico=%s" title="Editar Histórico"><img src="img/gear.png"/></a>', ACAO_ALTERAR, $row['historico']);
+            $editar = sprintf('<a href="editaHistoricFunc.php?acao=%s&id_historico=%s" title="Editar Histórico"><img src="img/gear.png"/></a>', ACAO_ALTERAR, $row['historico']);
 
             $apagar = sprintf('<a href="historicoFuncional.php?acao=%s&id_historico=%s"'
                     . 'onclick="return confirm(\'Tem certeza que deseja excluir este histórico ?\')" title="Excluir Histórico"><img src="img/x-button.png"/></a>', ACAO_APAGAR, $row['historico']);
@@ -65,12 +65,14 @@ try {
             $historicoLista = '';
             while ($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
                 //print_r($row);
-                $editar = sprintf('<a href="#?acao=%s&id_historico=%s" title="Editar Histórico"><img src="img/gear.png"/></a>', ACAO_ALTERAR, $row['historico']);
+                $editar = sprintf('<a href="editaHistoricFunc.php?acao=%s&id_historico=%s" title="Editar Histórico"><img src="img/gear.png"/></a>', ACAO_ALTERAR, $row['historico']);
 
                 $apagar = sprintf('<a href="historicoFuncional.php?acao=%s&id_historico=%s"'
                         . 'onclick="return confirm(\'Tem certeza que deseja excluir este histórico ?\')" title="Excluir Histórico"><img src="img/x-button.png"/></a>', ACAO_APAGAR, $row['historico']);
 
-                $historicoLista .= sprintf("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>", $row['historico'], date('d/m/Y', strtotime($row['data_pedido'])), date('d/m/Y', strtotime($row['data_realizado'])), $row['nome'], $row['funcao'], $row['tipo_exame'], $row['exame_descricao'], $row['nome_lab'], $editar, $apagar);
+                $historicoLista .= sprintf("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>", 
+                $row['historico'], date('d/m/Y', strtotime($row['data_pedido'])), date('d/m/Y', strtotime($row['data_realizado'])), $row['nome'], $row['funcao'], 
+                $row['tipo_exame'], $row['exame_descricao'], $row['nome_lab'], $editar, $apagar);
             }
         } catch (Exception $e) {
             if ($transac) {

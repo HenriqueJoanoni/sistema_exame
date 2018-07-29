@@ -29,8 +29,11 @@ try {
 
             $result = pg_query(ConnectPG(), 'commit');
             if (!$result) {throw new Exception("Não foi possivel concluir a transação");}
-
-            Alert("Funcionário Excluído!");
+            
+            echo "<SCRIPT type='text/javascript'> 
+                        alert('Funcionário Excluído!');
+                        window.location.replace(\"listaFuncionario.php\");
+                    </SCRIPT>";
         } catch (Exception $e) {
             if ($transac) {
                 pg_query(ConnectPG(), 'rollback');

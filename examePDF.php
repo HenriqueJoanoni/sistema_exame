@@ -8,8 +8,8 @@ $acao = isset($_POST['btCancelar']) ? ACAO_CONSULTAR : (isset($_REQUEST['acao'])
 $idFuncionario = 0;
 
 @$idFuncionario = $_POST['id_funcionario'];
-@$idLab = $_POST['id_laboratorio'];
 
+$idLab = explode("|",$_POST['id_laboratorio']);
 $exame = explode("|", $_POST['id_exame']);
 $funcao = explode("|", $_POST['id_funcao']);
 
@@ -22,12 +22,12 @@ $funcao = explode("|", $_POST['id_funcao']);
         if (!$result) {throw new Exception("Não foi possível iniciar a Transação!");}
         $transac = 1;
         
-        $sql = sprintf("UPDATE exame SET id_laboratorio = %s ,dt_solicitacao = %s WHERE id_exame = %s;",$idLab, QuotedStr($dataIni),$exame[0]);
+        $sql = sprintf("UPDATE exame SET id_laboratorio = %s ,dt_solicitacao = %s WHERE id_exame = %s;",$idLab[0], QuotedStr($dataIni),$exame[0]);
         $result = pg_query(ConnectPG(),$sql);
         if(!$result){throw new Exception("Não foi possível cadastrar o registro do exame!");}
         
         $sql = sprintf("INSERT INTO historico_funcional (id_funcionario,id_funcao,id_exame,dt_inicio,id_laboratorio) 
-                        VALUES (%s,%s,%s,%s,%s);", $idFuncionario, $funcao[0], $exame[0],QuotedStr($dataIni),$idLab);
+                        VALUES (%s,%s,%s,%s,%s);", $idFuncionario, $funcao[0], $exame[0],QuotedStr($dataIni),$idLab[0]);
         $result = pg_query(ConnectPG(),$sql);
         if(!$result){throw new Exception("Não foi possível registrar este histórico!");}
 
@@ -75,6 +75,10 @@ $funcao = explode("|", $_POST['id_funcao']);
         <b>Empregado(a): <?php echo $_POST['nome'];?></b><br><br>
         <b>Na função de: <?php echo $funcao[1]; ?></b>
     </div>
+    <div class="corposolicita2">
+        <b>O exame deve ser realizado em:</b><br>
+        <b><?php echo $idLab[1]; ?></b>
+    </div>
 </body>
 <?php
 // armazena o html no cache
@@ -88,7 +92,7 @@ $arquivo = $_POST['nome']."_".$exame[1].'.pdf';
 // define uma pasta para os arquivos temporários (necessário permissão de escrita no linux)
 $mpdf = new Mpdf\Mpdf(['tempDir' => __DIR__.'/tmp/custom']);
 $mpdf->WriteHTML($html); // prepara a escrita do html no arquivo
-$mpdf->Output($arquivo,'D'); // transforma o html e apresenta o arquivo de acordo com as diretivas descritas abaixo.
+$mpdf->Output($arquivo,'I'); // transforma o html e apresenta o arquivo de acordo com as diretivas descritas abaixo.
 
 // I = abre no browser
 // D = faz download do arquivo
