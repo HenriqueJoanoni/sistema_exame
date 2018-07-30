@@ -353,8 +353,46 @@ function inputCpf($param) {
  */
 function inputFone($param) {
     
-    $pattern = '/^([[:digit:]]{2})([[:digit:]]{5})([[:digit:]]{4})$/';
-    $replacement = '($1)$2-$3';
+    if(strlen($param) == 11){
+        $pattern = '/^([[:digit:]]{2})([[:digit:]]{5})([[:digit:]]{4})$/';
+        $replacement = '($1)$2-$3';
+        $format =  preg_replace($pattern, $replacement, $param);
+    }else{
+        $pattern = '/^([[:digit:]]{2})([[:digit:]]{4})([[:digit:]]{4})$/';
+        $replacement = '($1)$2-$3';
+        $format =  preg_replace($pattern, $replacement, $param);
+    }
+    
+    return $format;
+}
+
+/**
+ * <b>Função que Recebe uma String de CNPJ vinda do banco de dados e insere a máscara
+ * para apresentação no campo.</b>
+ * 
+ * @param String $param Recebe a string vinda do banco sem máscara.
+ * @return String Retorna a String de CNPJ formatada.
+ */
+function inputCnpj($param){
+    
+    $pattern = '/^([[:digit:]]{2})([[:digit:]]{3})([[:digit:]]{3})([[:digit:]]{4})([[:digit:]]{2})$/';
+    $replacement = '$1.$2.$3/$4-$5';
+    $format =  preg_replace($pattern, $replacement, $param);
+    
+    return $format;
+}
+
+/**
+ * <b>Função que recebe uma Sring de CEP vinda do banco de dados e insere a máscara
+ * para apresentação no campo.</b>
+ * 
+ * @param String $param Recebe a String vinda do banco sem máscara.
+ * @return String Retorna a String de CEP formatada.
+ */
+function inputCep($param){
+    
+    $pattern = '/^([[:digit:]]{5})([[:digit:]]{3})$/';
+    $replacement = '$1-$2';
     $format =  preg_replace($pattern, $replacement, $param);
     
     return $format;

@@ -13,7 +13,7 @@ if (isset($_POST['paramLogin']) && $_POST['paramLogin'] != "" && $_POST['paramSe
         $senhaPost = pg_escape_string($_POST['paramSenha']);
 
     // VERIFICA SE EXISTE USUÁRIOS CADASTRADOS COM O LOGIN E SENHA INFORMADO
-    $sql = sprintf("SELECT id_login,email,senha FROM login WHERE email = %s AND senha = %s", 
+    $sql = sprintf("SELECT id_login,email,senha,ativo FROM login WHERE email = %s AND senha = %s", 
                     QuotedStr($LoginPost), QuotedStr(md5($senhaPost)));
     $result = pg_query(ConnectPG(), $sql);
     $Res = pg_fetch_assoc($result);
@@ -24,7 +24,14 @@ if (isset($_POST['paramLogin']) && $_POST['paramLogin'] != "" && $_POST['paramSe
             $paramInsert[$campo] = $valor;
         }
         Alert("Login ou senha inválidos!");
-    } elseif ($result) {
+    }elseif($Res['ativo'] != 's'){
+        
+        foreach($_POST as $campo=>$valor){
+            $paramInsert[$campo] = $valor;
+        }
+        
+        Alert("Este usuário não tem permissão de login!");
+    }else {
         // CRIA AS SESSÕES DE VALIDAÇÃO DAS PAGINAS
         session_start();
         $_SESSION['IDlogin'] = $Res['id_login'];

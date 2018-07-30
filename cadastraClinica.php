@@ -48,9 +48,8 @@ try {
 
             echo "<SCRIPT type='text/javascript'>
                     alert('Clínica cadastrada com Sucesso!');
-                    window.location.replace(\"index.php\");
+                    window.location.replace(\"listaClinica.php\");
                     </SCRIPT>";
-            //Alert("Clínica inserida com sucesso");
         } catch (Exception $ex) {
             if ($transac) {
                 pg_query(ConnectPG(), 'rollback');
@@ -70,7 +69,7 @@ try {
         <div class="formcadastro">
             <h2 style="text-align: center">Cadastro de Clínicas</h2>
             <fieldset>
-                <form action="cadastraClinica.php" method="POST">
+                <form action="cadastraClinica.php" method="POST" id="cadClinica">
                     <input type="hidden" name="acao" value="<?php echo $acao; ?>">
                     <input type="hidden" name="id_lab" value="<?php echo $labCod; ?>">
                     <!--DADOS PESSOAIS --> 
@@ -80,19 +79,19 @@ try {
                             <tr>
                                 <td><label for="Laboratorio">Nome: </label></td>
                                 <td align="left">
-                                    <input type="text" name="nome_lab" size="26" placeholder="Laboratorio" value="<?php echo $paramInsert['nome_lab']; ?>">
+                                    <input type="text" name="nome_lab" size="26" placeholder="Laboratorio" id="nomeClinica" value="<?php echo $paramInsert['nome_lab']; ?>">
                                 </td>
                             </tr>
                             <tr>
                                 <td><label for="cnpj">CNPJ: </label></td>
                                 <td align="left">
-                                    <input type="text" name="cnpj" size="16" onkeydown="mascara(this,cnpjMask)" placeholder="CNPJ" maxlength="18" value="<?php echo $paramInsert['cnpj']; ?>"> 
+                                    <input type="text" name="cnpj" size="16" onkeydown="mascara(this,cnpjMask)" id="cnpj" placeholder="CNPJ" maxlength="18" value="<?php echo $paramInsert['cnpj']; ?>"> 
                                 </td>
                             </tr>
                             <tr>
                                 <td><label>Telefone:</label></td>
                                 <td align="left">
-                                    <input type="text" name="telefone" size="16" onkeyup="telmask(this)" maxlength="15" placeholder="Telefone" value="<?php echo $paramInsert['telefone']; ?>">
+                                    <input type="text" name="telefone" size="16" onkeyup="telmask(this)" id="telefone" maxlength="15" placeholder="Telefone" value="<?php echo $paramInsert['telefone']; ?>">
                                 </td>
                             </tr>
                             <tr>
@@ -114,13 +113,57 @@ try {
                         </table>
                     </fieldset>
                     <br />
-                    <input type="button" name="btCancelar" value="Cancelar" onclick="javascript: location.href='index.php';">
-                    <input type="submit" name="btEnviar" value="Cadastrar">
+                    <!--<input type="button" name="btCancelar" value="Cancelar" onclick="javascript: location.href='index.php';">-->
+                    <input type="button" name="btCancelar" value="Cancelar" onclick="javascript: window.history.back();">
+                    <input type="submit" id="validar" name="btEnviar" value="Cadastrar">
                 </form>
             </fieldset>
             <br>
         </div>
     </div>
+    <script>
+        $("#cadClinica").submit(function() {
+            if($("#nomeClinica").val()== null || $("#nomeClinica").val() ==""){
+                alert('Campo Nome está em branco!');     
+                return false;
+            }
+            
+            if($("#cnpj").val()== null || $("#cnpj").val() ==""){
+                alert('Campo cnpj está em branco!');     
+                return false;
+            }
+            
+            if($("#telefone").val()== null || $("#telefone").val() ==""){
+                alert('Campo telefone está em branco!');     
+                return false;
+            }
+            
+            if($("#cep").val()== null || $("#cep").val() ==""){
+                alert('Campo cep está em branco!');     
+                return false;
+            }
+            
+            if($("#rua").val()== null || $("#rua").val() ==""){
+                alert('Campo rua está em branco!');     
+                return false;
+            }
+            
+            if($("#bairro").val()== null || $("#bairro").val() ==""){
+                alert('Campo bairro está em branco!');     
+                return false;
+            }
+            
+            if($("#cidade").val()== null || $("#cidade").val() ==""){
+                alert('Campo cidade está em branco!');     
+                return false;
+            }
+            
+            if($("#uf").val()== null || $("#uf").val() ==""){
+                alert('Campo uf está em branco!');     
+                return false;
+            }
+        });
+    </script>
     <?php include 'apoio/footer.php'; ?>
 </html>
 

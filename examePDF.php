@@ -92,7 +92,7 @@ $arquivo = $_POST['nome']."_".$exame[1].'.pdf';
 // define uma pasta para os arquivos temporários (necessário permissão de escrita no linux)
 $mpdf = new Mpdf\Mpdf(['tempDir' => __DIR__.'/tmp/custom']);
 $mpdf->WriteHTML($html); // prepara a escrita do html no arquivo
-$mpdf->Output($arquivo,'I'); // transforma o html e apresenta o arquivo de acordo com as diretivas descritas abaixo.
+$mpdf->Output($arquivo,'D'); // transforma o html e apresenta o arquivo de acordo com as diretivas descritas abaixo.
 
 // I = abre no browser
 // D = faz download do arquivo

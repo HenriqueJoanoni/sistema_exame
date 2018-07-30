@@ -47,11 +47,24 @@ try {
                     QuotedStr($admissao), QuotedStr(@$_POST['ativo']));
             $result = pg_query(ConnectPG(), $sql);
             
+            if ($ativo == 's') {
+                
+                $sql = sprintf("INSERT INTO login (email, senha, ativo) VALUES (%s,%s,%s)", 
+                        QuotedStr($_POST['email']), QuotedStr(md5('1234')), QuotedStr($ativo));
+                $result = pg_query(ConnectPG(), $sql);
+
+                if (!$result) {
+                    foreach ($_POST as $campo => $valor) {
+                        $paramInsert[$campo] = $valor;
+                    }
+                    throw new Exception("Não foi possível Incluir o Funcionário à permissão de login!");
+                }
+            }
+
             $result = pg_query(ConnectPG(),'commit');
             if(!$result){throw new Exception("Não foi possível finalizar a transação");}
             
             if (!$result) {
-
                 foreach ($_POST as $campo => $valor) {
                     $paramInsert[$campo] = $valor;
                 }
@@ -92,37 +105,37 @@ try {
                             <tr>
                                 <td><label for="nome">Nome: </label></td>
                                 <td align="left">
-                                    <input type="text" name="nome" size="26" placeholder="Nome do Funcionario" value="<?php echo $paramInsert['nome']; ?>">
+                                    <input type="text" name="nome" size="26" id="nome" placeholder="Nome do Funcionario" value="<?php echo $paramInsert['nome']; ?>">
                                 </td>
                                 <td><label>Nascimento: </label></td>
                                 <td align="left">
-                                    <input type="text" name="data_de_nascimento" onkeypress="mascaraData(this)" size="16" placeholder="dd/mm/aa" value="<?php echo $paramInsert['data_de_nascimento']; ?>"> 
+                                    <input type="text" name="data_de_nascimento" id="data_nascimento" onkeypress="mascaraData(this)" size="16" placeholder="dd/mm/aa" value="<?php echo $paramInsert['data_de_nascimento']; ?>"> 
                                 </td>
                             </tr>
                             <tr>
                                 <td><label>Email: </label></td>
                                 <td align="left">
-                                    <input type="text" name="email"  size="26" placeholder="email do Funcionario" value="<?php echo $paramInsert['email']; ?>"> 
+                                    <input type="text" name="email"  size="26" id="email" placeholder="email do Funcionario" value="<?php echo $paramInsert['email']; ?>"> 
                                 </td>
                                 <td><label for="rg">RG: </label></td>
                                 <td align="left">
-                                    <input type="text" name="rg" size="16" placeholder="RG" maxlength="13" value="<?php echo $paramInsert['rg']; ?>"> 
+                                    <input type="text" name="rg" size="16" id="rg" placeholder="RG" maxlength="13" value="<?php echo $paramInsert['rg']; ?>"> 
                                 </td>
                             </tr>
                             <tr>
                                 <td><label>CPF:</label></td>
                                 <td align="left">
-                                    <input type="text" maxlength="14" onkeydown="mascara(this,cpfMask)" size="16" name="cpf" placeholder="000.000.000-00" value="<?php echo $paramInsert['cpf']; ?>">
+                                    <input type="text" maxlength="14" id="cpf" onkeydown="mascara(this,cpfMask)" size="16" name="cpf" placeholder="000.000.000-00" value="<?php echo $paramInsert['cpf']; ?>">
                                 </td>
                                 <td><label>Telefone: </label></td>
                                 <td align="left">
-                                    <input type="text" name="telefone" size="16" placeholder="(xx)xxxxx-xxxx" onkeyup="telmask(this)" value="<?php echo $paramInsert['telefone']; ?>"> 
+                                    <input type="text" name="telefone" id="telefone" size="16" placeholder="(xx)xxxxx-xxxx" onkeyup="telmask(this)" value="<?php echo $paramInsert['telefone']; ?>"> 
                                 </td>
                             </tr>
                             <tr>
                                 <td><label>Data de Admissão: </label></td>
                                 <td align="left">
-                                    <input type="text" name="dt_admissao" onkeypress="mascaraData(this)" size="16" placeholder="dd/mm/aa" value="<?php echo $paramInsert['dt_admissao']; ?>"> 
+                                    <input type="text" name="dt_admissao" id="data_admissao" onkeypress="mascaraData(this)" size="16" placeholder="dd/mm/aa" value="<?php echo $paramInsert['dt_admissao']; ?>"> 
                                 </td>
                             </tr>
                             <tr>
@@ -178,6 +191,69 @@ try {
             <br>
         </div>
     </div>
+    <script>
+        $("#cadFuncionario").submit(function() {
+            if($("#nome").val()== null || $("#nome").val() ==""){
+                alert('Campo Nome está em branco!');     
+                return false;
+            }
+            
+            if($("#data_nascimento").val()== null || $("#data_nascimento").val() ==""){
+                alert('Campo Data de Nascimento está em branco!');     
+                return false;
+            }
+            
+            if($("#email").val()== null || $("#email").val() ==""){
+                alert('Campo Email está em branco!');     
+                return false;
+            }
+            
+            if($("#rg").val()== null || $("#rg").val() ==""){
+                alert('Campo RG está em branco!');     
+                return false;
+            }
+            
+            if($("#cpf").val()== null || $("#cpf").val() ==""){
+                alert('Campo CPF está em branco!');     
+                return false;
+            }
+            
+            if($("#telefone").val()== null || $("#telefone").val() ==""){
+                alert('Campo Telefone está em branco!');     
+                return false;
+            }
+            
+            if($("#data_admissao").val()== null || $("#data_admissao").val() ==""){
+                alert('Campo Data de Admissão está em branco!');     
+                return false;
+            }
+            
+            if($("#cep").val()== null || $("#cep").val() ==""){
+                alert('Campo CEP está em branco!');     
+                return false;
+            }
+            
+            if($("#rua").val()== null || $("#rua").val() ==""){
+                alert('Campo Rua está em branco!');     
+                return false;
+            }
+            
+            if($("#bairro").val()== null || $("#bairro").val() ==""){
+                alert('Campo Bairro está em branco!');     
+                return false;
+            }
+            
+            if($("#cidade").val()== null || $("#cidade").val() ==""){
+                alert('Campo Cidade está em branco!');     
+                return false;
+            }
+            
+            if($("#uf").val()== null || $("#uf").val() ==""){
+                alert('Campo UF está em branco!');     
+                return false;
+            }
+        });
+    </script>
     <?php include 'apoio/footer.php'; ?>
 </html>
 

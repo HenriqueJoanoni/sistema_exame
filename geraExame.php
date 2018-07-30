@@ -14,7 +14,11 @@ $acao = isset($_REQUEST['acao']) ? $_REQUEST['acao'] : ACAO_CONSULTAR;
 try {
     $campoConsultar = isset($_POST['btConsultar']) ? $_POST['campoConsultar'] : '';
 
-    if (isset($_POST['btConsultar'])) {
+    if (isset($_POST['btConsultar']) && $campoConsultar == "") {
+        
+        throw new Exception("Por favor informe um funcionário!");
+        
+    }elseif (isset ($_POST['btConsultar'])) {
         $sql = sprintf("SELECT a.id_funcionario,b.id_setor,c.id_funcao,a.nome, b.nome_setor, c.descricao
                             FROM funcionario a
                             JOIN setor b ON a.id_setor = b.id_setor

@@ -9,8 +9,11 @@ try {
 
         $hint = "<strong>Digite o nome de algum funcionário e clique em consultar!</strong>";
         
-    } elseif (isset($_POST['btConsultar'])) {
-
+    } elseif (isset($_POST['btConsultar']) && $campoConsultar == "") {
+      
+        $hint = "<strong>Por favor, Informe um funcionário para consultar! </strong>";
+                
+    }else{
         $sql = sprintf("SELECT a.id_historico_funcional AS historico,a.dt_inicio AS data_pedido,a.dt_fim AS data_realizado,b.nome,
                         c.descricao AS funcao,d.tipo_exame, d.exame_descricao, e.nome_lab
                             FROM historico_funcional a
@@ -30,7 +33,7 @@ try {
                     . 'onclick="return confirm(\'Tem certeza que deseja excluir este histórico ?\')" title="Excluir Histórico"><img src="img/x-button.png"/></a>', ACAO_APAGAR, $row['historico']);
 
             $historicoLista .= sprintf("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>", 
-                    $row['historico'], date('d/m/Y', strtotime($row['data_pedido'])), date('d/m/Y', strtotime($row['data_realizado'])), 
+                    $row['historico'], date('d/m/Y', strtotime($row['data_pedido'])), $row['data_realizado'] == null ? 'Pendente' : date('d/m/Y', strtotime($row['data_realizado'])), 
                     $row['nome'], $row['funcao'], $row['tipo_exame'], $row['exame_descricao'],$row['nome_lab'], $editar, $apagar);
         }
     }
